@@ -26,3 +26,44 @@ CREATE TABLE orders (
 copy orders FROM '/Users/jacquelinelee/Desktop/Data-Projects/Superstore Project/Sample - Superstore 2.csv' WITH (FORMAT csv, HEADER true, ENCODING 'WIN1252');
 
 SELECT * FROM orders LIMIT 5
+
+SELECT COUNT(*) as total_orders
+FROM orders;
+--9994 total orders
+
+SELECT
+    DISTINCT(Category)
+FROM orders
+
+SELECT 
+    DISTINCT(Sub_Category) 
+FROM orders
+-- There is a total of 3 categories and 17 subcategories
+
+SELECT order_id,
+    COUNT()
+FROM orders 
+GROUP by 1 
+HAVING COUNT(*) > 1
+
+-- Which category is the most profitable?
+-- Technology most profitable based on total profit
+-- Furniture least profitable based on total profit
+SELECT 
+    orders.category,
+    ROUND(SUM(orders.sales), 2) as total_sales,
+    ROUND(SUM(orders.profit), 2) as total_profit
+FROM orders
+GROUP BY orders.category
+ORDER BY total_sales DESC
+
+-- What category sold the most units?
+-- 1. Office supplies 2. Furniture 3. Technology
+SELECT 
+    orders.category,
+    SUM(orders.quantity) as total_units
+FROM orders
+GROUP BY orders.category
+ORDER BY total_units DESC
+
+--
