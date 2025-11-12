@@ -27,6 +27,13 @@ copy orders FROM '/Users/jacquelinelee/Desktop/Data-Projects/Superstore Project/
 
 SELECT * FROM orders LIMIT 5
 
+-- 1. Check for nulls in key columns
+SELECT 
+    COUNT(*) - COUNT(sales) as null_sales,
+    COUNT(*) - COUNT(profit) as null_profit,
+    COUNT(*) - COUNT(quantity) as null_quantity
+FROM orders;
+
 SELECT COUNT(*) as total_orders
 FROM orders;
 --9994 total orders
@@ -66,4 +73,66 @@ FROM orders
 GROUP BY orders.category
 ORDER BY total_units DESC
 
---
+-- Most profitable sub-cat?
+-- phones, chairs, storage most sales $
+SELECT 
+    orders.category,
+    orders.sub_category,
+    ROUND(SUM(orders.sales), 2) as total_sales,
+    ROUND(SUM(orders.profit), 2) as total_profit
+FROM orders
+GROUP BY orders.category, orders.sub_category
+ORDER BY total_sales DESC
+
+-- copiers, phone and accessories most profit $
+SELECT 
+    orders.category,
+    orders.sub_category,
+    ROUND(SUM(orders.sales), 2) as total_sales,
+    ROUND(SUM(orders.profit), 2) as total_profit
+FROM orders
+GROUP BY orders.category, orders.sub_category
+ORDER BY total_profit DESC
+
+-- binders, papers, furnishings most units
+SELECT 
+    orders.category,
+    orders.sub_category,
+    SUM(orders.quantity) as total_units
+FROM orders
+GROUP BY orders.category, orders.sub_category
+ORDER BY total_units DESC
+
+-- Calculate profit margin
+-- Furniture very low margin
+SELECT 
+    orders.category,
+    ROUND(SUM(orders.sales), 2) AS total_sales,
+    ROUND(SUM(orders.profit), 2) AS total_profit,
+    ROUND((SUM(orders.profit) / SUM(orders.sales)) * 100, 2) AS margin_percent
+FROM orders
+GROUP BY orders.category
+ORDER BY total_sales DESC
+
+-- Book cases and tables negative margins within furniture category
+-- Higher margins in office supplies category
+-- Sub-cat Labels, Paper, Envelops and Copiers have highest margins
+SELECT 
+    orders.category,
+    orders.sub_category,
+    ROUND(SUM(orders.sales), 2) AS total_sales,
+    ROUND(SUM(orders.profit), 2) AS total_profit,
+    ROUND((SUM(orders.profit) / SUM(orders.sales)) * 100, 2) AS margin_percent
+FROM orders
+GROUP BY orders.category, orders.sub_category
+ORDER BY orders.category, margin_percent DESC
+
+-- Best sellers by profit $
+SELECT
+    orders.product_name,
+    SUM(orders.sales) as total_sales,
+    SUM(orders.profit) as total_profit,
+    ROUND((SUM(orders.profit) / SUM(orders.sales)) * 100, 2) AS margin_percent
+FROM orders
+GROUP BY orders.product_name
+ORDER by total_profit DESC
